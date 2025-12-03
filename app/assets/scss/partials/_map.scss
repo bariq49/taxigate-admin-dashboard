@@ -1,0 +1,46 @@
+.taxigate-codeVmapPrimary path {
+  @apply fill-primary;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-primary;
+  }
+}
+.taxigate-codeVmapWhite path {
+  @apply fill-default-200 dark:fill-slate-500;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-default-500 dark:fill-slate-200;
+  }
+}
+
+.taxigate-codeVmapInfo path {
+  @apply fill-info;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-info;
+  }
+}
+
+.taxigate-codeVmapWarning path {
+  @apply fill-warning;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-warning;
+  }
+}
+
+.taxigate-codeVmapSuccess path {
+  @apply fill-success;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-success;
+  }
+}
+
+.taxigate-codevmap path {
+  @apply fill-primary;
+
+  .svg-map__location[aria-checked="true"] {
+    @apply fill-primary;
+  }
+}
