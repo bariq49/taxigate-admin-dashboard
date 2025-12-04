@@ -4,7 +4,17 @@
 /node_modules
 /.pnp
 .pnp.js
-
+.env
+.env.local
+pnpm-lock.yaml
+package-lock.json
+pnpm-workspace.yaml
+yarn.lock
+bun.lockb
+bun.lock
+bun.lock.json
+bun.lock.yaml
+bun.lock.json
 # testing
 /coverage
 
