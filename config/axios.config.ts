@@ -1,7 +1,45 @@
 import axios from "axios";
+import { cookies, COOKIE_KEYS } from "@/lib/cookies";
 
-const baseURL = process.env.NEXT_PUBLIC_SITE_URL + "/api"; 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://taxigate-driver-panel.vercel.app";
 
 export const api = axios.create({
- baseURL,
+  baseURL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = cookies.get(COOKIE_KEYS.ACCESS_TOKEN);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    // If error is 401 (Unauthorized), clear auth data and redirect to login
+    if (error.response?.status === 401) {
+      // Clear all auth data
+      cookies.remove(COOKIE_KEYS.ACCESS_TOKEN);
+      cookies.remove(COOKIE_KEYS.ADMIN_DATA);
+      
+      // Redirect to login only if not already on auth page
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+        window.location.href = "/auth/login";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);

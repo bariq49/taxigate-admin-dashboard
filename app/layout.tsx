@@ -12,29 +12,29 @@ import DirectionProvider from "@/provider/direction.provider";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata = {
- title: {
- default: siteConfig.name,
- template: `%s - ${siteConfig.name}`,
- },
- description: siteConfig.description,
+    title: {
+        default: siteConfig.name,
+        template: `%s - ${siteConfig.name}`,
+    },
+    description: siteConfig.description,
 };
 
 interface RootLayoutProps {
- children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
- return (
- <html lang="en">
- <body className={inter.className}>
- <AuthProvider>
- <TanstackProvider>
- <Providers>
- <DirectionProvider>{children}</DirectionProvider>
- </Providers>
- </TanstackProvider>
- </AuthProvider>
- </body>
- </html>
- );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body className={inter.className} suppressHydrationWarning>
+                <TanstackProvider>
+                    <AuthProvider>
+                        <Providers>
+                            <DirectionProvider>{children}</DirectionProvider>
+                        </Providers>
+                    </AuthProvider>
+                </TanstackProvider>
+            </body>
+        </html>
+    );
 }
