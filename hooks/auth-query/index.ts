@@ -4,6 +4,9 @@ import { LoginFormData } from "@/lib/validations/auth.schema";
 import { setAccessToken, removeAccessToken, getAccessToken } from "@/lib/utils/cookies";
 import type { LoginResponse, AdminData } from "@/lib/types/auth.types";
 
+// Re-export useAuth for convenience
+export { useAuth } from "@/hooks/use-auth";
+
 export const useLogin = () => {
   const queryClient = useQueryClient();
 
