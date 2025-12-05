@@ -24,7 +24,8 @@ export interface AdminData {
   name: string;
   email: string;
   role: string;
-  tokenVersion: number;
+  active: boolean;
+  tokenVersion?: number;
 }
 
 /**
@@ -67,9 +68,16 @@ export type LogoutResponse = ApiResponse<{}>;
 // ----------------- Current User Response Types -----------------
 
 /**
+ * Current user API response data structure
+ */
+export interface CurrentUserResponseData {
+  admin: AdminData;
+}
+
+/**
  * Current user API response
  */
-export type CurrentUserResponse = ApiResponse<AdminData>;
+export type CurrentUserResponse = ApiResponse<CurrentUserResponseData>;
 
 // ----------------- Refresh Token Response Types -----------------
 

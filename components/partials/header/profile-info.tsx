@@ -76,12 +76,12 @@ const ProfileInfo = () => {
             {
               name: "profile",
               icon: "heroicons:user",
-              href: "/dashboard"
+              href: "/profile"
             },
             {
               name: "Settings",
               icon: "heroicons:cog-6-tooth",
-              href: "/dashboard"
+              href: "/profile/settings"
             },
           ].map((item, index) => (
             <Link

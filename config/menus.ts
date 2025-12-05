@@ -1,6 +1,7 @@
 
 import {
   DashBoard,
+  User,
 } from "@/components/svg";
 
 
@@ -23,6 +24,11 @@ export const menusConfig = {
       icon: DashBoard,
       href: "/dashboard",
     },
+    {
+      title: "Drivers",
+      icon: User,
+      href: "/drivers",
+    },
   ],
   sidebarNav: {
     modern: [
@@ -30,6 +36,11 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        title: "Drivers",
+        icon: User,
+        href: "/drivers",
       },
     ],
     classic: [
@@ -41,6 +52,11 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        title: "Drivers",
+        icon: User,
+        href: "/drivers",
       },
     ],
   },

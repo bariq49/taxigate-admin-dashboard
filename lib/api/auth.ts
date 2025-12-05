@@ -9,6 +9,7 @@ import type {
   AdminData,
   LoginResponse,
   LogoutResponse,
+  CurrentUserResponse,
 } from "@/lib/types/auth.types";
 import API_ROUTES from "@/config/routes";
 
@@ -32,8 +33,8 @@ export const loginAdmin = async (credentials: LoginFormData): Promise<LoginRespo
  * Get current user profile
  */
 export const getCurrentUser = async (): Promise<AdminData> => {
-  const response = await api.get<ApiResponse<AdminData>>(API_ROUTES.AUTH_ME);
-  return response.data.data;
+  const response = await api.get<CurrentUserResponse>(API_ROUTES.AUTH_ME);
+  return response.data.data.admin;
 };
 
 /**

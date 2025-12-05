@@ -4,6 +4,8 @@ export const API_ROUTES = {
     AUTH_LOGIN: `${API_BASE_URL}/auth/login`,
     AUTH_LOGOUT: `${API_BASE_URL}/auth/logout`,
     AUTH_ME: `${API_BASE_URL}/auth/me`,
+    DRIVERS_ALL: `${API_BASE_URL}/api/drivers/all`,
+    DRIVERS_APPROVE: `${API_BASE_URL}/api/drivers/approve`,
 } as const;
 
 export default API_ROUTES;
