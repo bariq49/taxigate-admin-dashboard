@@ -61,4 +61,116 @@ export interface ApproveDriverRequest {
  */
 export type ApproveDriverResponse = ApiResponse<Driver>;
 
+/**
+ * Driver documents structure
+ */
+export interface DriverDocuments {
+  documentFrontImage?: string;
+  documentBackImage?: string;
+  driverLicenseFront?: string;
+  driverLicenseBack?: string;
+  driverPassFront?: string;
+  driverPassBack?: string;
+  kiwaPermit?: string;
+  insurancePolicy?: string;
+  bankpass?: string;
+  kvkUittreksel?: string;
+}
+
+/**
+ * Document status detail
+ */
+export interface DocumentStatusDetail {
+  name: string;
+  uploaded: boolean;
+  url?: string;
+}
+
+/**
+ * Documents status structure
+ */
+export interface DocumentsStatus {
+  complete: boolean;
+  details: DocumentStatusDetail[];
+  uploadedCount: number;
+  totalCount: number;
+}
+
+/**
+ * Booking details structure
+ */
+export interface BookingDetails {
+  from_location: string;
+  to_location: string;
+  price: string;
+  date_time: string;
+}
+
+/**
+ * Wallet transaction structure
+ */
+export interface WalletTransaction {
+  id: string;
+  bookingId: string;
+  bookingDetails: BookingDetails;
+  amount: number;
+  type: "credit" | "debit";
+  description: string;
+  balanceAfter: number;
+  createdAt: string;
+}
+
+/**
+ * Driver stats structure
+ */
+export interface DriverStats {
+  totalEarnings: number;
+  completedRides: number;
+  averageRating: number | null;
+  totalRatings: number;
+  currency: string;
+}
+
+/**
+ * Vehicle data structure
+ */
+export interface Vehicle {
+  id: string;
+  type: string;
+  brand: string;
+  model: string;
+  color: string;
+  plateNumber: string;
+  image: string;
+  status: "Pending" | "Approved" | "Rejected";
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Detailed driver data structure (from driver details API)
+ */
+export interface DriverDetails extends Driver {
+  currency?: string;
+  documents: DriverDocuments;
+  documentsStatus: DocumentsStatus;
+  vehicles: Vehicle[];
+  walletTransactions: WalletTransaction[];
+  transactionCount: number;
+  stats: DriverStats;
+  deletedAt?: string | null;
+}
+
+/**
+ * Driver details API response data structure
+ */
+export interface DriverDetailsResponseData {
+  driver: DriverDetails;
+}
+
+/**
+ * Driver details API response
+ */
+export type DriverDetailsResponse = ApiResponse<DriverDetailsResponseData>;
+
 

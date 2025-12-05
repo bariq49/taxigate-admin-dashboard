@@ -12,6 +12,7 @@ import react from "@/public/images/social/react.png"
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { DriverDetails } from "@/lib/types/driver.types";
 
 interface TeamData {
   name: string;
@@ -21,7 +22,11 @@ interface TeamData {
   color?: "default" | "destructive" | "success" | "info" | "warning" | "dark" | "secondary";
 }
 
-const Teams = () => {
+interface TeamsProps {
+  driver?: DriverDetails;
+}
+
+const Teams = ({ driver }: TeamsProps) => {
   const data: TeamData[] = [
     {
       name: "Social Media Support",

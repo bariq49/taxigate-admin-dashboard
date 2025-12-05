@@ -8,6 +8,7 @@ import Pinterest from "@/public/images/social/pinterest-circle.png"
 import Web from "@/public/images/social/web.png"
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
+import { DriverDetails } from "@/lib/types/driver.types";
 
 interface PortfolioData {
   name: string;
@@ -16,7 +17,11 @@ interface PortfolioData {
 
 }
 
-const Portfolio = () => {
+interface PortfolioProps {
+  driver?: DriverDetails;
+}
+
+const Portfolio = ({ driver }: PortfolioProps) => {
 
   const data: PortfolioData[] = [
     {

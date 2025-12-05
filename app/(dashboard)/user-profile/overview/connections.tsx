@@ -12,6 +12,7 @@ import avatar6 from "@/public/images/avatar/user-2.png"
 import Image, { StaticImageData } from "next/image";
 import { UserPlus } from "@/components/svg";
 import Link from "next/link";
+import { DriverDetails } from "@/lib/types/driver.types";
 
 interface DataItemProps {
   name: string;
@@ -19,7 +20,11 @@ interface DataItemProps {
   count: number;
 }
 
-const Connections = () => {
+interface ConnectionsProps {
+  driver?: DriverDetails;
+}
+
+const Connections = ({ driver }: ConnectionsProps) => {
   const data: DataItemProps[] = [
     {
       name: "Alex Smith",

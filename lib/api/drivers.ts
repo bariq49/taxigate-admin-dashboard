@@ -8,6 +8,8 @@ import type {
   DriversResponseData,
   ApproveDriverRequest,
   ApproveDriverResponse,
+  DriverDetailsResponse,
+  DriverDetailsResponseData,
 } from "@/lib/types/driver.types";
 import API_ROUTES from "@/config/routes";
 
@@ -44,6 +46,18 @@ export const approveOrRejectDriver = async (
     data
   );
   return response.data;
+};
+
+/**
+ * Get driver details by ID
+ */
+export const getDriverDetails = async (
+  driverId: string
+): Promise<DriverDetailsResponseData> => {
+  const response = await api.get<DriverDetailsResponse>(
+    API_ROUTES.DRIVERS_DETAILS(driverId)
+  );
+  return response.data.data;
 };
 
 
