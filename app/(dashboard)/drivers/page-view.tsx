@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/Tables/data-table/data-table";
 import { getDriverColumns, getDriverFilterColumns } from "@/components/Tables/data-table/columns/driver-columns";
 import { getAllDrivers, GetDriversParams } from "@/lib/api/drivers";
@@ -10,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import toast from "react-hot-toast";
 
 const DriversPageView = () => {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
@@ -29,9 +31,8 @@ const DriversPageView = () => {
   const pagination = data?.pagination;
 
   const handleView = useCallback((driver: Driver) => {
-    toast.success(`Viewing driver: ${driver.firstName || driver.email}`);
-    // TODO: Implement view driver details
-  }, []);
+    router.push(`/user-profile/${driver.id}`);
+  }, [router]);
 
   const handleDelete = useCallback((driver: Driver) => {
     toast.success(`Driver deleted: ${driver.firstName || driver.email}`);
