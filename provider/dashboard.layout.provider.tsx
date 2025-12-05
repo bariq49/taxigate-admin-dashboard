@@ -7,7 +7,6 @@ import { useSidebar } from "@/store";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import MobileSidebar from "@/components/partials/sidebar/mobile-sidebar";
 import HeaderSearch from "@/components/header-search";
 import { useMounted } from "@/hooks/use-mounted";
 import LayoutLoader from "@/components/layout-loader";
@@ -85,7 +84,6 @@ const LayoutWrapper = ({ children, isMobile, setOpen, open, location, trans }: {
  <main>{children}</main>
  </motion.div>
 
- <MobileSidebar trans={trans} className="left-[300px]" />
  <HeaderSearch open={open} setOpen={setOpen} />
  </>
  );

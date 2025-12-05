@@ -5,18 +5,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 
 export default function Error({ error, reset }: {
- error: Error & { digest?: string }
- reset: () => void
+    error: Error & { digest?: string }
+    reset: () => void
 }) {
- return (
- <div className="space-y-4">
- <Alert color="destructive" variant="soft">
- <Info className="h-5 w-5" />
- <AlertDescription>Something went wrong!</AlertDescription>
- </Alert>
- <Button onClick={() => reset()} color="destructive" size="sm">
- Try again
- </Button>
- </div>
- );
+    return (
+        <div className="space-y-4">
+            <Alert color="destructive" variant="soft">
+                <Info className="h-5 w-5" />
+                <AlertDescription>Something went wrong!</AlertDescription>
+            </Alert>
+            <Button onClick={() => reset()} color="destructive" size="sm">
+                Try again
+            </Button>
+        </div>
+    );
 }
