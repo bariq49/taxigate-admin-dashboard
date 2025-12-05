@@ -5,7 +5,6 @@ import { siteConfig } from "@/config/site";
 import Providers from "@/provider/providers";
 import "simplebar-react/dist/simplebar.min.css";
 import TanstackProvider from "@/provider/providers.client";
-import AuthProvider from "@/provider/auth.provider";
 import "flatpickr/dist/themes/light.css";
 import DirectionProvider from "@/provider/direction.provider";
 
@@ -28,11 +27,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className} suppressHydrationWarning>
                 <TanstackProvider>
-                    <AuthProvider>
-                        <Providers>
-                            <DirectionProvider>{children}</DirectionProvider>
-                        </Providers>
-                    </AuthProvider>
+                    <Providers>
+                        <DirectionProvider>{children}</DirectionProvider>
+                    </Providers>
                 </TanstackProvider>
             </body>
         </html>
