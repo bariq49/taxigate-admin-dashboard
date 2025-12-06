@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
+import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SiteLogo } from "@/components/svg";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -113,13 +113,11 @@ const LogInForm = () => {
                             onClick={togglePasswordType}
                         >
                             {passwordType === "password" ? (
-                                <Icon
-                                    icon="heroicons:eye"
+                                <Eye
                                     className="w-5 h-5 text-default-400"
                                 />
                             ) : (
-                                <Icon
-                                    icon="heroicons:eye-slash"
+                                <EyeOff
                                     className="w-5 h-5 text-default-400"
                                 />
                             )}

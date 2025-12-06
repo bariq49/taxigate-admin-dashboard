@@ -48,17 +48,31 @@ export function getDriverColumns({
 
         return (
           <div className="flex items-center gap-3 py-2">
-            <Avatar className="h-10 w-10 rounded-full border bg-muted">
-              {driver.profilePicture ? (
-                <AvatarImage
-                  src={driver.profilePicture}
-                  alt={fullName}
-                />
-              ) : null}
-              <AvatarFallback className="text-sm font-semibold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="h-10 w-10 rounded-full border bg-muted">
+                {driver.profilePicture ? (
+                  <AvatarImage
+                    src={driver.profilePicture}
+                    alt={fullName}
+                  />
+                ) : null}
+                <AvatarFallback className="text-sm font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute bottom-0 right-0">
+                {driver.isOnline ? (
+                  <div className="relative">
+                    <Circle className="h-3.5 w-3.5 fill-green-500 text-green-500" />
+                    <div className="absolute inset-0 animate-ping">
+                      <Circle className="h-3.5 w-3.5 fill-green-500/75 text-green-500/75" />
+                    </div>
+                  </div>
+                ) : (
+                  <Circle className="h-3.5 w-3.5 fill-gray-400 text-gray-400" />
+                )}
+              </div>
+            </div>
             <div className="flex flex-col">
               <span className="font-semibold truncate max-w-[200px]">
                 {fullName}
@@ -70,6 +84,32 @@ export function getDriverColumns({
           </div>
         );
       },
+      filterFn: (row, id, value) => {
+        const driver = row.original;
+        const fullName = driver.firstName || driver.lastName
+          ? `${driver.firstName || ""} ${driver.lastName || ""}`.trim()
+          : "N/A";
+        const searchValue = (value as string)?.toLowerCase() || "";
+        return (
+          fullName.toLowerCase().includes(searchValue) ||
+          driver.email?.toLowerCase().includes(searchValue)
+        );
+      },
+    },
+    {
+      id: "email",
+      accessorKey: "email",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Email" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <span className="text-sm text-muted-foreground">
+            {row.original.email}
+          </span>
+        );
+      },
+      enableHiding: true,
     },
     {
       accessorKey: "phone",
@@ -127,22 +167,13 @@ export function getDriverColumns({
           </div>
         );
       },
-    },
-    {
-      accessorKey: "isOnline",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Online" />
-      ),
-      cell: ({ row }) => {
-        const isOnline = row.original.isOnline;
-        return (
-          <div className="flex items-center gap-2">
-            <Circle
-              className={`h-3 w-3 ${isOnline ? "fill-green-500 text-green-500" : "fill-gray-400 text-gray-400"}`}
-            />
-            <span className="text-sm">{isOnline ? "Online" : "Offline"}</span>
-          </div>
-        );
+      filterFn: (row, id, value) => {
+        const cellValue = row.getValue(id) as boolean;
+        if (!value || !Array.isArray(value) || value.length === 0) return true;
+        return value.some((val: string) => {
+          const boolVal = val === "true";
+          return cellValue === boolVal;
+        });
       },
     },
     {

@@ -1,5 +1,5 @@
 "use client";
-import { Icon } from "@iconify/react";
+import { ChevronRight } from "lucide-react";
 import { cn, translate } from "@/lib/utils";
 import React from "react";
 
@@ -41,7 +41,7 @@ const MultiMenuHandler = ({
  }
  )}
  >
- <Icon icon="heroicons:chevron-right-20-solid" className="h-5 w-5" />
+        <ChevronRight className="h-5 w-5" />
  </span>
  </div>
  </div>

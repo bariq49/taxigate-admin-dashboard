@@ -1,7 +1,7 @@
 'use client'
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Icon } from "@iconify/react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
@@ -135,11 +135,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
  {...props}
  >
  {children}
- {dismissible && (
- <button onClick={handleDismiss} className=" grow-0">
- <Icon icon="heroicons:x-mark" className="w-5 h-5" />
- </button>
- )}
+        {dismissible && (
+          <button onClick={handleDismiss} className=" grow-0">
+            <X className="w-5 h-5" />
+          </button>
+        )}
  </div>
  ) : null;
  }

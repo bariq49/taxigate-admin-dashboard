@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { Icon } from "@iconify/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Settings } from "@/components/svg";
 import { useAuth } from "@/hooks/auth-query";

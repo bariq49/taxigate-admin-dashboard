@@ -1,5 +1,5 @@
 "use client";
-import { Icon } from "@iconify/react";
+import { ChevronRight } from "lucide-react";
 import { cn, translate } from "@/lib/utils";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -82,10 +82,7 @@ const SubMenuHandler = ({
  }
  )}
  >
- <Icon
- icon="heroicons:chevron-right-20-solid"
- className="h-5 w-5"
- />
+        <ChevronRight className="h-5 w-5" />
  </div>
  </div>
  </div>

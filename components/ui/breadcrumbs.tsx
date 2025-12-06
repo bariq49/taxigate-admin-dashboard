@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Icon } from "@iconify/react";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -89,7 +89,7 @@ const Breadcrumbs = React.forwardRef<HTMLOListElement, BreadcrumbsProps>(
  color,
  size,
  disabled,
- separator = <Icon icon="heroicons:chevron-right" className="rtl:rotate-180" />,
+  separator = <ChevronRight className="rtl:rotate-180" />,
  variant,
  underline,
  renderEllipsis,
@@ -145,14 +145,14 @@ const Breadcrumbs = React.forwardRef<HTMLOListElement, BreadcrumbsProps>(
  ellipsisClass
  )}
  >
- {renderEllipsis}
- <span className="separator px-1 self-center">
- {separator ? (
- separator
- ) : (
- <Icon icon="heroicons:chevron-right" />
- )}
- </span>
+                {renderEllipsis}
+                <span className="separator px-1 self-center">
+                  {separator ? (
+                    separator
+                  ) : (
+                    <ChevronRight />
+                  )}
+                </span>
  </div>
  ) : (
  <div
@@ -161,16 +161,16 @@ const Breadcrumbs = React.forwardRef<HTMLOListElement, BreadcrumbsProps>(
  ellipsisClass
  )}
  >
- <span>
- <Icon icon="heroicons:ellipsis-horizontal" />
- </span>
- <span className="separator px-1 self-center">
- {separator ? (
- separator
- ) : (
- <Icon icon="heroicons:chevron-right" />
- )}
- </span>
+          <span>
+            <MoreHorizontal />
+          </span>
+          <span className="separator px-1 self-center">
+            {separator ? (
+              separator
+            ) : (
+              <ChevronRight />
+            )}
+          </span>
  </div>
  )}
  </li>

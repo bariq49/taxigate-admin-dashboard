@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupText } from "@/components/ui/input-group";
-import { Icon } from "@iconify/react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -83,7 +83,7 @@ const DriverActivityPage = () => {
         </CardTitle>
         <InputGroup merged className="flex-none max-w-[248px]">
           <InputGroupText>
-            <Icon icon="heroicons:magnifying-glass" />
+            <Search />
           </InputGroupText>
           <Input type="text" placeholder="Search.." />
         </InputGroup>

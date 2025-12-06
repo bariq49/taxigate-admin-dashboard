@@ -5,8 +5,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Icon } from "@iconify/react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -153,7 +152,7 @@ const ChangePassword = () => {
           <div className="mt-6 flex gap-5 justify-end">
             <Button color="secondary">Cancel</Button>
             <Button>
-              <Icon icon="heroicons:lock-closed" className="w-5 h-5 text-primary-foreground me-1" />
+              <Lock className="w-5 h-5 text-primary-foreground me-1" />
               Change Password
             </Button>
           </div>
