@@ -393,7 +393,7 @@ const BookingDetailsPage = () => {
                   <div className="text-sm text-muted-foreground">Driver ID</div>
                   <div className="text-sm font-mono">{booking.driverId}</div>
                   <Button
-                    variant="destructive"
+                    color="destructive"
                     className="w-full"
                     onClick={() => unassignMutation.mutate()}
                     disabled={unassignMutation.isPending}
@@ -441,7 +441,7 @@ const BookingDetailsPage = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Paid:</span>
-                <Badge variant={booking.isPaid ? "default" : "outline"}>
+                <Badge variant={booking.isPaid ? undefined : "outline"}>
                   {booking.isPaid ? "Yes" : "No"}
                 </Badge>
               </div>

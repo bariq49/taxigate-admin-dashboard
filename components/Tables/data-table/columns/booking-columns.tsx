@@ -53,7 +53,8 @@ export function getBookingColumns({
         return (
           booking.user_name?.toLowerCase().includes(searchValue) ||
           booking.email?.toLowerCase().includes(searchValue) ||
-          booking.number?.toLowerCase().includes(searchValue)
+          booking.number?.toLowerCase().includes(searchValue) ||
+          false
         );
       },
     },

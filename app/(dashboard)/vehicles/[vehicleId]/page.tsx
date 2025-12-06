@@ -282,7 +282,7 @@ const VehicleDetailsPage = () => {
                   Approve Vehicle
                 </Button>
                 <Button
-                  variant="destructive"
+                  color="destructive"
                   className="w-full"
                   onClick={() => setRejectDialogOpen(true)}
                   disabled={rejectMutation.isPending}
