@@ -76,7 +76,7 @@ const DriverVehiclesPage = () => {
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Driver Vehicles</CardTitle>
           <div className="flex items-center gap-2 mt-2">
-            <Badge variant="secondary">
+            <Badge color="secondary">
               {vehicles.length} {vehicles.length === 1 ? "Vehicle" : "Vehicles"}
             </Badge>
           </div>

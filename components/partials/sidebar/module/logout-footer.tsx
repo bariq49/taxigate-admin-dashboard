@@ -1,5 +1,5 @@
 "use client";
-import { Icon } from "@iconify/react";
+import { LogOut } from "lucide-react";
 import { useAuth, useLogout } from "@/hooks/auth-query";
 
 const LogoutFooter = () => {
@@ -24,10 +24,7 @@ const LogoutFooter = () => {
             disabled={isPending}
             className=" text-default-500 inline-flex h-9 w-9 rounded items-center dark:bg-default-300 justify-center dark:text-default-900 disabled:opacity-50"
           >
-            <Icon
-              icon="heroicons:arrow-right-start-on-rectangle-20-solid"
-              className=" h-5 w-5"
-            />
+            <LogOut className=" h-5 w-5" />
           </button>
         </div>
       </div>

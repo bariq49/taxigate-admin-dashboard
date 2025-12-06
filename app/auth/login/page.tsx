@@ -1,7 +1,7 @@
 "use client";
 
 import LogInForm from "./login-form";
-import { Icon } from "@iconify/react";
+import { ShieldCheck, BarChart3, Settings, Lock } from "lucide-react";
 
 const LoginPage = () => {
 
@@ -61,8 +61,7 @@ const LoginPage = () => {
 
                                 <div className="bg-card overflow-hidden w-full rounded-3xl rounded-tr-none relative mt-11 pt-8 pb-7 px-8">
                                     <div className="h-[72px] w-[72px] rounded-full bg-background flex justify-center items-center absolute right-0 top-0 z-10">
-                                        <Icon
-                                            icon="heroicons:shield-check-solid"
+                                        <ShieldCheck
                                             className="w-12 h-12 text-primary"
                                         />
                                     </div>
@@ -82,7 +81,7 @@ const LoginPage = () => {
                                     <div className="space-y-6">
                                         <div className="flex items-start gap-4">
                                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                <Icon icon="heroicons:chart-bar-solid" className="w-6 h-6 text-primary" />
+                                                <BarChart3 className="w-6 h-6 text-primary" />
                                             </div>
                                             <div>
                                                 <div className="text-lg font-semibold text-default-900">
@@ -96,7 +95,7 @@ const LoginPage = () => {
 
                                         <div className="flex items-start gap-4">
                                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                <Icon icon="heroicons:cog-6-tooth-solid" className="w-6 h-6 text-primary" />
+                                                <Settings className="w-6 h-6 text-primary" />
                                             </div>
                                             <div>
                                                 <div className="text-lg font-semibold text-default-900">
@@ -110,7 +109,7 @@ const LoginPage = () => {
 
                                         <div className="flex items-start gap-4">
                                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                <Icon icon="heroicons:lock-closed-solid" className="w-6 h-6 text-primary" />
+                                                <Lock className="w-6 h-6 text-primary" />
                                             </div>
                                             <div>
                                                 <div className="text-lg font-semibold text-default-900">

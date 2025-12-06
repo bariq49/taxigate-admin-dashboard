@@ -38,13 +38,13 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
   if (driverId && isLoadingDriver) {
     return (
       <React.Fragment>
-        <Card className="mt-6 rounded-t-2xl">
-          <CardContent className="p-0">
-            <div className="relative h-[200px] lg:h-[296px] rounded-t-2xl w-full">
-              <Skeleton className="h-full w-full" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mt-6">
+          <Card>
+            <CardContent className="p-6">
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+        </div>
         <div className="mt-6">
           {children}
         </div>

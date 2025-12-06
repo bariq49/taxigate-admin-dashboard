@@ -8,11 +8,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useLogout } from "@/hooks/auth-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Settings, Power } from "lucide-react";
 import toast from "react-hot-toast";
 
 const ProfileInfo = () => {
@@ -75,12 +74,12 @@ const ProfileInfo = () => {
           {[
             {
               name: "profile",
-              icon: "heroicons:user",
+              icon: User,
               href: "/profile"
             },
             {
               name: "Settings",
-              icon: "heroicons:cog-6-tooth",
+              icon: Settings,
               href: "/profile/settings"
             },
           ].map((item, index) => (
@@ -90,7 +89,7 @@ const ProfileInfo = () => {
               className="cursor-pointer"
             >
               <DropdownMenuItem className="flex items-center gap-2 text-sm font-medium text-default-600 capitalize px-3 py-1.5 dark:hover:bg-background cursor-pointer">
-                <Icon icon={item.icon} className="w-4 h-4" />
+                <item.icon className="w-4 h-4" />
                 {item.name}
               </DropdownMenuItem>
             </Link>
@@ -112,7 +111,7 @@ const ProfileInfo = () => {
             </>
           ) : (
             <>
-              <Icon icon="heroicons:power" className="w-4 h-4" />
+              <Power className="w-4 h-4" />
               Log out
             </>
           )}

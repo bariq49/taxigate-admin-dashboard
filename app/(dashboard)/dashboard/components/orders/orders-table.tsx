@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button"
 import { data } from "./data"
-import { Icon } from "@iconify/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils"
 
 interface DataItem {
@@ -177,13 +177,13 @@ const OrdersTable = () => {
  </div>
 
  <div className="flex justify-center items-center gap-2 mt-5">
- <Button
- onClick={() => table.previousPage()}
- disabled={!table.getCanPreviousPage()}
- className="w-7 h-7 p-0 bg-default-100 hover:bg-default-200 text-default-600"
- >
- <Icon icon="heroicons:chevron-left" className="w-3.5 h-3.5 rtl:rotate-180 " />
- </Button>
+        <Button
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="w-7 h-7 p-0 bg-default-100 hover:bg-default-200 text-default-600"
+        >
+          <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 " />
+        </Button>
 
  {table.getPageOptions().map((page, pageIdx) => (
  <Button
@@ -198,13 +198,13 @@ const OrdersTable = () => {
 
  ))}
 
- <Button
- onClick={() => table.nextPage()}
- disabled={!table.getCanNextPage()}
- className="w-7 h-7 p-0 bg-default-100 hover:bg-default-200 text-default-600"
- >
- <Icon icon="heroicons:chevron-right" className="w-3.5 h-3.5 rtl:rotate-180" />
- </Button>
+        <Button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="w-7 h-7 p-0 bg-default-100 hover:bg-default-200 text-default-600"
+        >
+          <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
+        </Button>
  </div >
  </>
  );

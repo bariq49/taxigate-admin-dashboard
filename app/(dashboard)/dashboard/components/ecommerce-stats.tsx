@@ -2,7 +2,7 @@
 
 import { CupBar, NoteIcon, CheckShape, Spam } from "@/components/svg";
 import { cn } from "@/lib/utils";
-import { Icon } from "@iconify/react";
+import { TrendingUp } from "lucide-react";
 
 const EcommerceStats = () => {
  const data = [
@@ -70,10 +70,10 @@ const EcommerceStats = () => {
  <span className="mt-3 text-sm text-default-800 dark:text-primary-foreground font-medium capitalize relative z-10">
  {item.text}
  </span>
- <div className="flex items-center gap-1">
- <span className="text-lg font-semibold text-default-900 dark:text-primary-foreground">{item.total}</span>
- <Icon icon="heroicons:arrow-trending-up" className={`w-5 h-5 text-${item.color} dark:text-primary-foreground`} />
- </div>
+          <div className="flex items-center gap-1">
+            <span className="text-lg font-semibold text-default-900 dark:text-primary-foreground">{item.total}</span>
+            <TrendingUp className={`w-5 h-5 text-${item.color} dark:text-primary-foreground`} />
+          </div>
  </div>
  ))}
  </>

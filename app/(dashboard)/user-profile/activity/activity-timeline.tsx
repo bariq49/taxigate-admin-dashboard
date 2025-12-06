@@ -13,7 +13,7 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar";
-import { Icon } from "@iconify/react";
+import { ArrowRight, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { File } from "lucide-react";
 
@@ -190,7 +190,7 @@ const ActivityTimeline = () => {
                     Robert Nolan completed
                   </span>
                   <span className="text-xl rotate-90 sm:rotate-0">
-                    <Icon icon="ph:arrow-right-thin" />
+                    <ArrowRight />
                   </span>
                   <span className="text-sm text-default-500 ">
                     CRM Application
@@ -285,10 +285,10 @@ const ActivityTimeline = () => {
             </div>
             <div className="flex-none flex items-center gap-2">
               <span className="text-xl text-default-400">
-                <Icon icon="tdesign:call" />
+                <Phone />
               </span>
               <span className="text-xl text-default-400">
-                <Icon icon="ph:envelope" />
+                <Mail />
               </span>
             </div>
           </div>

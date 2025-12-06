@@ -15,7 +15,7 @@ import busket from "@/public/images/all-img/busket.jpg";
 import mic from "@/public/images/all-img/mic.jpg";
 import orange from "@/public/images/all-img/orange.jpg";
 import Image from "next/image";
-import { Icon } from "@iconify/react";
+import { MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { DriverDetails } from "@/lib/types/driver.types";
@@ -51,7 +51,7 @@ const RecentActivity = ({ driver }: RecentActivityProps) => {
           size="icon"
           className="w-6 h-6 bg-default-100 dark:bg-default-50 text-default-500  hover:bg-default-100"
         >
-          <Icon icon="heroicons:ellipsis-vertical" className="w-4 h-4" />
+          <MoreVertical className="w-4 h-4" />
         </Button>
       </CardHeader>
       <CardContent>

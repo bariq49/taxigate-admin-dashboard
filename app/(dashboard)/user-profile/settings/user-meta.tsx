@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import avatar from "@/public/images/avatar/avatar-3.jpg"
-import { Icon } from "@iconify/react";
+import { PenSquare } from "lucide-react";
 import Image from "next/image";
 const UserMeta = () => {
   return (
@@ -19,7 +19,7 @@ const UserMeta = () => {
             <Label
               htmlFor="avatar"
             >
-              <Icon className="w-5 h-5 text-primary-foreground" icon="heroicons:pencil-square" />
+              <PenSquare className="w-5 h-5 text-primary-foreground" />
             </Label>
           </Button>
           <Input type="file" className="hidden" id="avatar" />

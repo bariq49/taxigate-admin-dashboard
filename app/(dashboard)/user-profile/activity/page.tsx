@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupText } from "@/components/ui/input-group";
-import { Icon } from "@iconify/react";
+import { Search } from "lucide-react";
 import ActivityTimeline from "./activity-timeline";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react"
@@ -13,7 +13,7 @@ const Activity = () => {
         <CardTitle className="flex-1 text-2xl font-medium text-default-900 whitespace-nowrap">Recent Activity</CardTitle>
         <InputGroup merged className="flex-none max-w-[248px]">
           <InputGroupText>
-            <Icon icon="heroicons:magnifying-glass" />
+            <Search />
           </InputGroupText>
           <Input type="text" placeholder="Search.." />
         </InputGroup>

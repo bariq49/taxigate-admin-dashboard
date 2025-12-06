@@ -1,7 +1,5 @@
 "use client";
-import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Home } from "lucide-react";
 import coverImage from "@/public/images/all-img/user-cover.png"
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -37,14 +35,6 @@ const Header = ({ driver }: HeaderProps) => {
     : "JF";
   return (
     <Fragment>
-      <Breadcrumbs>
-        <BreadcrumbItem>
-          <Home className="h-4 w-4" />
-        </BreadcrumbItem>
-        <BreadcrumbItem>Pages</BreadcrumbItem>
-        <BreadcrumbItem>Utility</BreadcrumbItem>
-        <BreadcrumbItem>User Profile</BreadcrumbItem>
-      </Breadcrumbs>
       <Card className="mt-6 rounded-t-2xl ">
         <CardContent className="p-0">
           <div className="relative h-[200px] lg:h-[296px] rounded-t-2xl w-full object-cover bg-no-repeat"
@@ -146,7 +136,13 @@ const Header = ({ driver }: HeaderProps) => {
                   link: driver ? `/user-profile/${driver.id}/settings` : "/user-profile/settings",
                   exact: false
                 },
-              ].map((item, index) => {
+              ].filter((item) => {
+                // Remove Settings tab when viewing a driver profile
+                if (driver && item.title === "Settings") {
+                  return false;
+                }
+                return true;
+              }).map((item, index) => {
                 let isActive = false;
                 
                 if (item.exact) {

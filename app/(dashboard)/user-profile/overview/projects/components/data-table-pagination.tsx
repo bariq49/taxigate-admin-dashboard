@@ -1,6 +1,6 @@
 "use client"
 
-import { Icon } from "@iconify/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Table } from "@tanstack/react-table";
@@ -20,7 +20,7 @@ export function DataTablePagination<TData>({ table }: { table: Table<TData> }) {
           disabled={!table.getCanPreviousPage()}
           className="h-7 w-7 bg-default-100 dark:bg-default-50 text-default-800 rounded-md hover:bg-default-200 "
         >
-          <Icon icon="heroicons:chevron-left" className="w-3 h-3 rtl:rotate-180" />
+          <ChevronLeft className="w-3 h-3 rtl:rotate-180" />
         </Button>
 
         {table.getPageOptions().map((page, pageIdx) => (
@@ -43,7 +43,7 @@ export function DataTablePagination<TData>({ table }: { table: Table<TData> }) {
           size="icon"
           className="h-7 w-7  bg-default-100 dark:bg-default-50 text-default-800 rounded-md hover:bg-default-200"
         >
-          <Icon icon="heroicons:chevron-right" className="w-3 h-3 rtl:rotate-180" />
+          <ChevronRight className="w-3 h-3 rtl:rotate-180" />
         </Button>
       </div>
     </div>

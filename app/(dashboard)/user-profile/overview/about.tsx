@@ -2,7 +2,7 @@
 import { UserSign, Web, Mail2 } from '@/components/svg';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Icon } from '@iconify/react';
+import { MoreVertical } from 'lucide-react';
 import { DriverDetails } from '@/lib/types/driver.types';
 import { Phone } from 'lucide-react';
 import { format } from 'date-fns';
@@ -20,7 +20,7 @@ const About = ({ driver }: AboutProps) => {
           size="icon"
           className="w-6 h-6 bg-default-100 dark:bg-default-50 text-default-500 hover:bg-default-100"
         >
-          <Icon icon="heroicons:ellipsis-vertical" className="w-4 h-4" />
+          <MoreVertical className="w-4 h-4" />
         </Button>
       </CardHeader>
       <CardContent>
