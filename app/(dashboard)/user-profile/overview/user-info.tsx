@@ -143,40 +143,6 @@ const UserInfo = ({ driver }: UserInfoProps) => {
             </div>
           </>
         )}
-        {!driver && (
-          <>
-            <div className="mt-6 text-lg font-medium text-default-800 mb-4">Active Teams</div>
-            <div className="space-y-3">
-              {
-                [
-                  {
-                    title: "UI/UX Designer",
-                    img: FigmaImage,
-                    total: 65
-                  },
-                  {
-                    title: "Frontend Developer",
-                    img: ReactImage,
-                    total: 126
-                  }
-                ].map((item, index) => (
-                  <div
-                    key={`active-team-${index}`}
-                    className="flex items-center gap-2"
-                  >
-                    <Image src={item.img} alt={item.title} className="w-4 h-4" />
-                    <div className="text-sm font-medium text-default-800">
-                      {item.title}
-                      <span className="font-normal">
-                        ({item.total} members)
-                      </span>
-                    </div>
-                  </div>
-                ))
-              }
-            </div>
-          </>
-        )}
       </CardContent>
     </Card>
   );

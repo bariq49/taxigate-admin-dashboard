@@ -93,20 +93,102 @@ const DriverProfilePage = () => {
 
   if (isLoading || !driver) {
     return (
-      <div className="pt-6 grid grid-cols-12 gap-6">
-        <div className="col-span-12 lg:col-span-4 space-y-6">
-          <Card>
-            <CardContent className="p-6">
-              <Skeleton className="h-32 w-full" />
-            </CardContent>
-          </Card>
+      <div className="pt-6 space-y-6">
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-8 w-32" />
+                  </div>
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        <div className="col-span-12 lg:col-span-8 space-y-6">
-          <Card>
-            <CardContent className="p-6">
-              <Skeleton className="h-64 w-full" />
-            </CardContent>
-          </Card>
+
+        {/* Main Content Skeleton */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column */}
+          <div className="col-span-12 lg:col-span-4 space-y-6">
+            {/* Profile Progress Skeleton */}
+            <Card>
+              <CardHeader className="border-none mb-0">
+                <Skeleton className="h-6 w-32" />
+              </CardHeader>
+              <CardContent className="px-4 space-y-4">
+                <div className="flex flex-col items-end gap-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-2 w-full rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* User Info Skeleton */}
+            <Card>
+              <CardHeader className="border-none mb-0">
+                <Skeleton className="h-6 w-28" />
+              </CardHeader>
+              <CardContent className="px-4 space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <ul className="mt-6 space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      <Skeleton className="h-4 w-4 rounded" />
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 flex-1" />
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 space-y-3">
+                  <Skeleton className="h-5 w-32" />
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-4 rounded" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column */}
+          <div className="col-span-12 lg:col-span-8 space-y-6">
+            {/* About Card Skeleton */}
+            <Card>
+              <CardHeader className="flex-row justify-between items-center mb-3 border-none">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-6 rounded" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
+                <div className="mt-6 flex flex-wrap items-center gap-6">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Skeleton className="h-10 w-10 rounded" />
+                      <div className="space-y-1">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
@@ -170,13 +252,8 @@ const DriverProfilePage = () => {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Average Rating</p>
                 <p className="text-2xl font-bold mt-1">
-                  {driver.stats?.averageRating ? driver.stats.averageRating.toFixed(1) : "N/A"}
+                  {driver.stats?.averageRating ? driver.stats.averageRating.toFixed(1) : "0"}
                 </p>
-                {driver.stats?.totalRatings && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {driver.stats.totalRatings} ratings
-                  </p>
-                )}
               </div>
               <div className="h-12 w-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
                 <Star className="h-6 w-6 text-yellow-500" />
@@ -233,7 +310,7 @@ const DriverProfilePage = () => {
                   </Button>
                   <Button
                     onClick={() => setRejectDialogOpen(true)}
-                    variant="destructive"
+                    color="destructive"
                     className="flex-1"
                     size="lg"
                   >
