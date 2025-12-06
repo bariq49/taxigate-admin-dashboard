@@ -3,6 +3,7 @@ import {
   DashBoard,
   User,
 } from "@/components/svg";
+import { Car, Calendar } from "lucide-react";
 
 
 export interface MenuItemProps {
@@ -29,6 +30,16 @@ export const menusConfig = {
       icon: User,
       href: "/drivers",
     },
+    {
+      title: "Vehicles",
+      icon: Car,
+      href: "/vehicles",
+    },
+    {
+      title: "Bookings",
+      icon: Calendar,
+      href: "/bookings",
+    },
   ],
   sidebarNav: {
     modern: [
@@ -41,6 +52,16 @@ export const menusConfig = {
         title: "Drivers",
         icon: User,
         href: "/drivers",
+      },
+      {
+        title: "Vehicles",
+        icon: Car,
+        href: "/vehicles",
+      },
+      {
+        title: "Bookings",
+        icon: Calendar,
+        href: "/bookings",
       },
     ],
     classic: [
@@ -57,6 +78,16 @@ export const menusConfig = {
         title: "Drivers",
         icon: User,
         href: "/drivers",
+      },
+      {
+        title: "Vehicles",
+        icon: Car,
+        href: "/vehicles",
+      },
+      {
+        title: "Bookings",
+        icon: Calendar,
+        href: "/bookings",
       },
     ],
   },
