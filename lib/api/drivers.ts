@@ -29,10 +29,36 @@ export interface GetDriversParams {
 export const getAllDrivers = async (
   params?: GetDriversParams
 ): Promise<DriversResponseData> => {
-  const response = await api.get<DriversResponse>(API_ROUTES.DRIVERS_ALL, {
-    params,
-  });
-  return response.data.data;
+  try {
+    console.log("API Call - Get All Drivers:", {
+      url: API_ROUTES.DRIVERS_ALL,
+      params,
+    });
+    
+    const response = await api.get<DriversResponse>(API_ROUTES.DRIVERS_ALL, {
+      params,
+    });
+    
+    console.log("API Response - Get All Drivers:", {
+      status: response.status,
+      data: response.data,
+      drivers: response.data?.data?.drivers?.length || 0,
+    });
+    
+    if (!response.data?.data) {
+      console.error("Unexpected response structure:", response.data);
+      throw new Error("Invalid response structure from API");
+    }
+    
+    return response.data.data;
+  } catch (error: any) {
+    console.error("API Error - Get All Drivers:", {
+      message: error?.message,
+      response: error?.response?.data,
+      status: error?.response?.status,
+    });
+    throw error;
+  }
 };
 
 /**

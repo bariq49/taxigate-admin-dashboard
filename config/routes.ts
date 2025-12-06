@@ -7,6 +7,17 @@ export const API_ROUTES = {
     DRIVERS_ALL: `${API_BASE_URL}/api/drivers/all`,
     DRIVERS_APPROVE: `${API_BASE_URL}/api/drivers/approve`,
     DRIVERS_DETAILS: (driverId: string) => `${API_BASE_URL}/api/drivers/${driverId}`,
+    VEHICLES_ALL: `${API_BASE_URL}/api/vehicle/admin/all`,
+    VEHICLE_DETAILS: (vehicleId: string) => `${API_BASE_URL}/api/vehicle/admin/${vehicleId}`,
+    VEHICLE_APPROVE: (vehicleId: string) => `${API_BASE_URL}/api/vehicle/admin/${vehicleId}/approve`,
+    VEHICLE_REJECT: (vehicleId: string) => `${API_BASE_URL}/api/vehicle/admin/${vehicleId}/reject`,
+    BOOKINGS_ALL: `${API_BASE_URL}/api/bookings/admin/all`,
+    BOOKINGS_PENDING_LONG_DISTANCE: `${API_BASE_URL}/api/bookings/admin/pending-long-distance`,
+    BOOKINGS_ABOVE_150: `${API_BASE_URL}/api/bookings/admin/above-150`,
+    BOOKINGS_BELOW_150: `${API_BASE_URL}/api/bookings/admin/below-150`,
+    BOOKINGS_ADMIN_ASSIGNED: `${API_BASE_URL}/api/bookings/admin/assigned`,
+    BOOKING_ASSIGN_DRIVER: (bookingId: string) => `${API_BASE_URL}/api/bookings/${bookingId}/assign-driver`,
+    BOOKING_UNASSIGN_DRIVER: (bookingId: string) => `${API_BASE_URL}/api/bookings/${bookingId}/unassign-driver`,
 } as const;
 
 export default API_ROUTES;

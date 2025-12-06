@@ -132,9 +132,9 @@ export interface DriverStats {
 }
 
 /**
- * Vehicle data structure
+ * Vehicle data structure (used in driver details)
  */
-export interface Vehicle {
+export interface DriverVehicle {
   id: string;
   type: string;
   brand: string;
@@ -154,7 +154,7 @@ export interface DriverDetails extends Driver {
   currency?: string;
   documents: DriverDocuments;
   documentsStatus: DocumentsStatus;
-  vehicles: Vehicle[];
+  vehicles: DriverVehicle[];
   walletTransactions: WalletTransaction[];
   transactionCount: number;
   stats: DriverStats;
