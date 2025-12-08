@@ -31,6 +31,17 @@ export const getAllBookings = async (
 };
 
 /**
+ * Get live bookings (unified endpoint for admin and driver)
+ * Shows all pending, non-expired bookings in real-time
+ */
+export const getLiveBookings = async (): Promise<BookingsResponseData> => {
+  const response = await api.get<BookingsResponse>(
+    API_ROUTES.BOOKINGS_LIVE
+  );
+  return response.data.data;
+};
+
+/**
  * Get pending long-distance bookings (price > 150, status: pending)
  */
 export const getPendingLongDistanceBookings = async (
@@ -77,6 +88,32 @@ export const getAdminAssignedBookings = async (
 ): Promise<BookingsResponseData> => {
   const response = await api.get<BookingsResponse>(
     API_ROUTES.BOOKINGS_ADMIN_ASSIGNED,
+    { params }
+  );
+  return response.data.data;
+};
+
+/**
+ * Get expired bookings (bookings that expired after 5 minutes without driver acceptance)
+ */
+export const getExpiredBookings = async (
+  params?: GetBookingsParams
+): Promise<BookingsResponseData> => {
+  const response = await api.get<BookingsResponse>(
+    API_ROUTES.BOOKINGS_EXPIRED,
+    { params }
+  );
+  return response.data.data;
+};
+
+/**
+ * Get completed bookings with driver details (Admin only)
+ */
+export const getAdminCompletedBookings = async (
+  params?: GetBookingsParams
+): Promise<BookingsResponseData> => {
+  const response = await api.get<BookingsResponse>(
+    API_ROUTES.BOOKINGS_COMPLETED,
     { params }
   );
   return response.data.data;

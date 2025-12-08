@@ -12,10 +12,13 @@ export const API_ROUTES = {
     VEHICLE_APPROVE: (vehicleId: string) => `${API_BASE_URL}/api/vehicle/admin/${vehicleId}/approve`,
     VEHICLE_REJECT: (vehicleId: string) => `${API_BASE_URL}/api/vehicle/admin/${vehicleId}/reject`,
     BOOKINGS_ALL: `${API_BASE_URL}/api/bookings/admin/all`,
+    BOOKINGS_LIVE: `${API_BASE_URL}/api/bookings/live`,
     BOOKINGS_PENDING_LONG_DISTANCE: `${API_BASE_URL}/api/bookings/admin/pending-long-distance`,
     BOOKINGS_ABOVE_150: `${API_BASE_URL}/api/bookings/admin/above-150`,
     BOOKINGS_BELOW_150: `${API_BASE_URL}/api/bookings/admin/below-150`,
     BOOKINGS_ADMIN_ASSIGNED: `${API_BASE_URL}/api/bookings/admin/assigned`,
+    BOOKINGS_EXPIRED: `${API_BASE_URL}/api/bookings/admin/expired`,
+    BOOKINGS_COMPLETED: `${API_BASE_URL}/api/bookings/admin/completed`,
     BOOKING_ASSIGN_DRIVER: (bookingId: string) => `${API_BASE_URL}/api/bookings/${bookingId}/assign-driver`,
     BOOKING_UNASSIGN_DRIVER: (bookingId: string) => `${API_BASE_URL}/api/bookings/${bookingId}/unassign-driver`,
 } as const;

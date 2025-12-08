@@ -6,6 +6,7 @@ import "simplebar-react/dist/simplebar.min.css";
 import TanstackProvider from "@/provider/providers.client";
 import "flatpickr/dist/themes/light.css";
 import DirectionProvider from "@/provider/direction.provider";
+import { AblyProvider } from "@/contexts/ably-context";
 
 export const metadata = {
     title: {
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <body suppressHydrationWarning>
                 <TanstackProvider>
                     <Providers>
-                        <DirectionProvider>{children}</DirectionProvider>
+                        <AblyProvider>
+                            <DirectionProvider>{children}</DirectionProvider>
+                        </AblyProvider>
                     </Providers>
                 </TanstackProvider>
             </body>
