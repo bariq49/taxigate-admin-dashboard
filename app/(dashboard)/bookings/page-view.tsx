@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { useAbly } from "@/contexts/ably-context";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/Tables/data-table/data-table";
 import { getBookingColumns, getBookingFilterColumns } from "@/components/Tables/data-table/columns/booking-columns";
 import {
-  getAllBookings,
-  getPendingLongDistanceBookings,
+  getLiveBookings,
   getBookingsAbove150,
+  getBookingsBelow150,
   getAdminAssignedBookings,
+  getExpiredBookings,
+  getAdminCompletedBookings,
   assignDriverToBooking,
   unassignDriverFromBooking,
 } from "@/lib/api/bookings";
 import { getAllDrivers } from "@/lib/api/drivers";
-import { Booking } from "@/lib/types/booking.types";
+import { Booking, BookingsResponseData } from "@/lib/types/booking.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -35,29 +39,36 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Clock } from "lucide-react";
 
 const BookingsPageView = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"all" | "above150" | "assigned" | "pending">("all");
+  const { user } = useAuth();
+  const { subscribe, isConnected } = useAbly();
+  const [activeTab, setActiveTab] = useState<"live" | "assigned" | "expired" | "above150" | "below150" | "completed">("live");
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [selectedDriverId, setSelectedDriverId] = useState<string>("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
-  // Fetch all bookings
+  // Fetch live bookings (real-time)
+  // Always enabled when user is logged in (not just when tab is active)
+  // This ensures cache is available for real-time updates even when on other tabs
   const {
-    data: allData,
-    isLoading: isLoadingAll,
-    error: allError,
-    isFetching: isFetchingAll,
+    data: liveData,
+    isLoading: isLoadingLive,
+    error: liveError,
+    isFetching: isFetchingLive,
   } = useQuery({
-    queryKey: ["bookings", "all", page, pageSize],
-    queryFn: () => getAllBookings({ page, limit: pageSize }),
-    enabled: activeTab === "all",
-    staleTime: 30000,
+    queryKey: ["bookings", "live"],
+    queryFn: () => getLiveBookings(),
+    enabled: !!user, // Always enabled when user is logged in
+    staleTime: 10000, // Cache for 10 seconds
+    refetchInterval: false, // Disable automatic refetch - rely on Ably for real-time updates
+    // Keep data in cache even when query is not actively being used
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   // Fetch bookings above 150
@@ -73,16 +84,16 @@ const BookingsPageView = () => {
     staleTime: 30000,
   });
 
-  // Fetch pending bookings (price > 150, status: pending)
+  // Fetch bookings below 150
   const {
-    data: pendingData,
-    isLoading: isLoadingPending,
-    error: pendingError,
-    isFetching: isFetchingPending,
+    data: below150Data,
+    isLoading: isLoadingBelow150,
+    error: below150Error,
+    isFetching: isFetchingBelow150,
   } = useQuery({
-    queryKey: ["bookings", "pending", page, pageSize],
-    queryFn: () => getPendingLongDistanceBookings({ page, limit: pageSize }),
-    enabled: activeTab === "pending",
+    queryKey: ["bookings", "below150", page, pageSize],
+    queryFn: () => getBookingsBelow150({ page, limit: pageSize }),
+    enabled: activeTab === "below150",
     staleTime: 30000,
   });
 
@@ -96,6 +107,32 @@ const BookingsPageView = () => {
     queryKey: ["bookings", "assigned", page, pageSize],
     queryFn: () => getAdminAssignedBookings({ page, limit: pageSize }),
     enabled: activeTab === "assigned",
+    staleTime: 30000,
+  });
+
+  // Fetch expired bookings
+  const {
+    data: expiredData,
+    isLoading: isLoadingExpired,
+    error: expiredError,
+    isFetching: isFetchingExpired,
+  } = useQuery({
+    queryKey: ["bookings", "expired", page, pageSize],
+    queryFn: () => getExpiredBookings({ page, limit: pageSize }),
+    enabled: activeTab === "expired",
+    staleTime: 30000,
+  });
+
+  // Fetch completed bookings with driver details
+  const {
+    data: completedData,
+    isLoading: isLoadingCompleted,
+    error: completedError,
+    isFetching: isFetchingCompleted,
+  } = useQuery({
+    queryKey: ["bookings", "completed", page, pageSize],
+    queryFn: () => getAdminCompletedBookings({ page, limit: pageSize }),
+    enabled: activeTab === "completed",
     staleTime: 30000,
   });
 
@@ -121,10 +158,12 @@ const BookingsPageView = () => {
     retry: 2,
   });
 
-  const allBookings = allData?.bookings || [];
+  const liveBookings = liveData?.bookings || [];
   const above150Bookings = above150Data?.bookings || [];
-  const pendingBookings = pendingData?.bookings || [];
+  const below150Bookings = below150Data?.bookings || [];
   const assignedBookings = assignedData?.bookings || [];
+  const expiredBookings = expiredData?.bookings || [];
+  const completedBookings = completedData?.bookings || [];
   const drivers = driversData?.drivers || [];
 
   // Filter verified and approved drivers
@@ -162,10 +201,12 @@ const BookingsPageView = () => {
     onSuccess: (data) => {
       console.log("Driver assigned successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      queryClient.invalidateQueries({ queryKey: ["bookings", "all"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "live"] });
       queryClient.invalidateQueries({ queryKey: ["bookings", "above150"] });
-      queryClient.invalidateQueries({ queryKey: ["bookings", "pending"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "below150"] });
       queryClient.invalidateQueries({ queryKey: ["bookings", "assigned"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "expired"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "completed"] });
       toast.success("Driver assigned successfully");
       setAssignDialogOpen(false);
       setSelectedBooking(null);
@@ -186,10 +227,11 @@ const BookingsPageView = () => {
     mutationFn: (bookingId: string) => unassignDriverFromBooking(bookingId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      queryClient.invalidateQueries({ queryKey: ["bookings", "all"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "live"] });
       queryClient.invalidateQueries({ queryKey: ["bookings", "above150"] });
-      queryClient.invalidateQueries({ queryKey: ["bookings", "pending"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "below150"] });
       queryClient.invalidateQueries({ queryKey: ["bookings", "assigned"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "completed"] });
       toast.success("Driver unassigned successfully");
     },
     onError: (error: any) => {
@@ -224,10 +266,12 @@ const BookingsPageView = () => {
       return;
     }
     
-    // Validate booking price (must be > 150 for admin assignment)
+    // Validate booking price (must be > 150 for admin assignment OR expired)
     const price = parseFloat(selectedBooking.price?.replace(/[^\d.-]/g, "") || "0");
-    if (price <= 150) {
-      toast.error("Only bookings with price above €150 can be admin-assigned");
+    const isExpired = selectedBooking.isExpired === true;
+    
+    if (price <= 150 && !isExpired) {
+      toast.error("Only bookings with price above €150 or expired bookings can be admin-assigned");
       return;
     }
     
@@ -248,19 +292,24 @@ const BookingsPageView = () => {
     onView: handleView,
     onAssignDriver: handleAssignDriver,
     onUnassignDriver: handleUnassignDriver,
+    hideExpiration: activeTab === "completed", // Hide expiration column for completed bookings
   });
 
   // Get current bookings and pagination based on active tab
   const getCurrentBookings = () => {
     switch (activeTab) {
-      case "all":
-        return { bookings: allBookings, pagination: allData?.pagination };
-      case "above150":
-        return { bookings: above150Bookings, pagination: above150Data?.pagination };
-      case "pending":
-        return { bookings: pendingBookings, pagination: pendingData?.pagination };
+      case "live":
+        return { bookings: liveBookings, pagination: undefined }; // Live bookings don't use pagination
       case "assigned":
         return { bookings: assignedBookings, pagination: assignedData?.pagination };
+      case "expired":
+        return { bookings: expiredBookings, pagination: expiredData?.pagination };
+      case "above150":
+        return { bookings: above150Bookings, pagination: above150Data?.pagination };
+      case "below150":
+        return { bookings: below150Bookings, pagination: below150Data?.pagination };
+      case "completed":
+        return { bookings: completedBookings, pagination: completedData?.pagination };
       default:
         return { bookings: [], pagination: undefined };
     }
@@ -269,14 +318,18 @@ const BookingsPageView = () => {
   // Get loading state based on active tab
   const getLoadingState = () => {
     switch (activeTab) {
-      case "all":
-        return { isLoading: isLoadingAll, isFetching: isFetchingAll, error: allError };
-      case "above150":
-        return { isLoading: isLoadingAbove150, isFetching: isFetchingAbove150, error: above150Error };
-      case "pending":
-        return { isLoading: isLoadingPending, isFetching: isFetchingPending, error: pendingError };
+      case "live":
+        return { isLoading: isLoadingLive, isFetching: isFetchingLive, error: liveError };
       case "assigned":
         return { isLoading: isLoadingAssigned, isFetching: isFetchingAssigned, error: assignedError };
+      case "expired":
+        return { isLoading: isLoadingExpired, isFetching: isFetchingExpired, error: expiredError };
+      case "above150":
+        return { isLoading: isLoadingAbove150, isFetching: isFetchingAbove150, error: above150Error };
+      case "below150":
+        return { isLoading: isLoadingBelow150, isFetching: isFetchingBelow150, error: below150Error };
+      case "completed":
+        return { isLoading: isLoadingCompleted, isFetching: isFetchingCompleted, error: completedError };
       default:
         return { isLoading: false, isFetching: false, error: null };
     }
@@ -297,9 +350,217 @@ const BookingsPageView = () => {
 
   // Reset page when tab changes
   const handleTabChange = (value: string) => {
-    setActiveTab(value as "all" | "above150" | "assigned" | "pending");
+    setActiveTab(value as "live" | "assigned" | "expired" | "above150" | "below150" | "completed");
     setPage(1);
   };
+
+  // Real-time updates for all bookings using Ably
+  useEffect(() => {
+    if (!user || !isConnected) return;
+
+    // Helper function to update live bookings cache
+    const updateLiveBookingsCache = (bookingData: any, action: "add" | "remove" | "update") => {
+      queryClient.setQueryData(
+        ["bookings", "live"],
+        (oldData: BookingsResponseData | undefined) => {
+          // If no old data exists, initialize with empty structure
+          if (!oldData) {
+            if (action === "add" && bookingData) {
+              return {
+                bookings: [bookingData],
+                pagination: {
+                  total: 1,
+                  page: 1,
+                  pages: 1,
+                  limit: 100,
+                },
+              };
+            }
+            return oldData; // Return undefined if no data and not adding
+          }
+
+          // Create a new array to ensure React Query detects the change
+          let updatedBookings = [...oldData.bookings];
+
+          if (action === "add") {
+            // Check if booking already exists (use id or bookingId)
+            const bookingId = bookingData.id || bookingData.bookingId;
+            const exists = updatedBookings.some((b) => b.id === bookingId);
+            if (!exists && bookingId) {
+              // Add new booking at the beginning
+              updatedBookings = [bookingData, ...updatedBookings];
+            }
+          } else if (action === "remove") {
+            // Use id or bookingId for removal
+            const bookingId = bookingData.id || bookingData.bookingId;
+            updatedBookings = updatedBookings.filter(
+              (b) => b.id !== bookingId
+            );
+          } else if (action === "update") {
+            // Use id or bookingId for update
+            const bookingId = bookingData.id || bookingData.bookingId;
+            updatedBookings = updatedBookings.map((b) =>
+              b.id === bookingId ? { ...b, ...bookingData } : b
+            );
+          }
+
+          // Return new object to ensure React Query detects the change
+          return {
+            ...oldData,
+            bookings: updatedBookings,
+            pagination: {
+              ...oldData.pagination,
+              total: updatedBookings.length,
+            },
+          };
+        },
+        { updatedAt: Date.now() } // Force update timestamp
+      );
+    };
+
+    // Helper function to update booking in all relevant caches
+    const updateBookingInCache = (bookingData: any) => {
+      const bookingId = bookingData.bookingId || bookingData.id;
+
+      // Update live bookings if it exists there
+      queryClient.setQueryData(
+        ["bookings", "live"],
+        (oldData: { bookings: Booking[] } | undefined) => {
+          if (!oldData) return oldData;
+          const updatedBookings = oldData.bookings.map((b) =>
+            b.id === bookingId ? { ...b, ...bookingData } : b
+          );
+          return { ...oldData, bookings: updatedBookings };
+        }
+      );
+
+      // Update other booking lists (they will refetch on next access if needed)
+      // For now, we'll invalidate them but only when the active tab matches
+      if (activeTab === "assigned" || activeTab === "expired" || activeTab === "above150" || activeTab === "below150") {
+        queryClient.invalidateQueries({ queryKey: ["bookings", activeTab] });
+      }
+    };
+
+    // Subscribe to live booking events
+    const unsubscribeAdded = subscribe("live-booking-added", (message: any) => {
+      console.log("🔔 Live booking added:", message.data);
+      if (message.data?.booking) {
+        // Backend sends { booking: fullBookingData, action: "added", timestamp: ... }
+        const booking = message.data.booking;
+        console.log("📦 Adding booking to cache:", booking.id || booking.bookingId);
+        updateLiveBookingsCache(booking, "add");
+      }
+    });
+
+    const unsubscribeRemoved = subscribe("live-booking-removed", (message: any) => {
+      console.log("🔔 Live booking removed:", message.data);
+      if (message.data) {
+        // Backend sends { bookingId: "...", action: "removed", timestamp: ... }
+        const bookingId = message.data.bookingId || message.data.id;
+        if (bookingId) {
+          updateLiveBookingsCache({ id: bookingId, bookingId }, "remove");
+        }
+      }
+    });
+
+    const unsubscribeUpdated = subscribe("live-booking-updated", (message: any) => {
+      console.log("🔔 Live booking updated:", message.data);
+      if (message.data?.booking) {
+        // Backend sends { booking: fullBookingData, action: "updated", timestamp: ... }
+        updateLiveBookingsCache(message.data.booking, "update");
+      }
+    });
+
+    // Subscribe to booking status updates
+    const unsubscribeStarted = subscribe("booking-started", (message: any) => {
+      console.log("🔔 Booking started:", message.data);
+      if (message.data) {
+        updateBookingInCache(message.data);
+      }
+    });
+
+    const unsubscribePickedUp = subscribe("booking-picked-up", (message: any) => {
+      console.log("🔔 Booking picked up:", message.data);
+      if (message.data) {
+        updateBookingInCache(message.data);
+      }
+    });
+
+    const unsubscribeDroppedOff = subscribe("booking-dropped-off", (message: any) => {
+      console.log("🔔 Booking dropped off:", message.data);
+      if (message.data) {
+        updateBookingInCache(message.data);
+      }
+    });
+
+    const unsubscribeCompleted = subscribe("booking-completed", (message: any) => {
+      console.log("🔔 Booking completed:", message.data);
+      if (message.data) {
+        updateBookingInCache(message.data);
+        // Remove from live bookings if it was there
+        queryClient.setQueryData(
+          ["bookings", "live"],
+          (oldData: { bookings: Booking[] } | undefined) => {
+            if (!oldData) return oldData;
+            const updatedBookings = oldData.bookings.filter(
+              (b) => b.id !== (message.data.bookingId || message.data.id)
+            );
+            return { ...oldData, bookings: updatedBookings };
+          }
+        );
+        
+        // Invalidate completed bookings cache to refetch with new booking
+        // This ensures the new completed booking appears in the list
+        if (activeTab === "completed") {
+          queryClient.invalidateQueries({ queryKey: ["bookings", "completed"] });
+        }
+      }
+    });
+
+    const unsubscribeAssigned = subscribe("booking-assigned", (message: any) => {
+      console.log("🔔 Booking assigned:", message.data);
+      if (message.data) {
+        // Update booking in all caches
+        updateBookingInCache(message.data);
+        
+        // Also update live bookings cache if the booking exists there
+        // Backend sends full booking data, so we can use it directly
+        const bookingId = message.data.id || message.data.bookingId;
+        if (bookingId) {
+          updateLiveBookingsCache(message.data, "update");
+        }
+      }
+    });
+
+    const unsubscribeTaken = subscribe("booking-taken", (message: any) => {
+      console.log("🔔 Booking taken:", message.data);
+      if (message.data) {
+        // Backend sends full booking data, so we can use it directly
+        const bookingId = message.data.id || message.data.bookingId;
+        
+        // Update booking in all caches
+        updateBookingInCache(message.data);
+        
+        // Remove from live bookings (booking is no longer available/pending)
+        if (bookingId) {
+          updateLiveBookingsCache({ id: bookingId, bookingId }, "remove");
+        }
+      }
+    });
+
+    // Cleanup subscriptions
+    return () => {
+      unsubscribeAdded();
+      unsubscribeRemoved();
+      unsubscribeUpdated();
+      unsubscribeStarted();
+      unsubscribePickedUp();
+      unsubscribeDroppedOff();
+      unsubscribeCompleted();
+      unsubscribeAssigned();
+      unsubscribeTaken();
+    };
+  }, [user, isConnected, subscribe, queryClient, activeTab]);
 
   return (
     <div className="space-y-6">
@@ -309,16 +570,61 @@ const BookingsPageView = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="grid w-full max-w-2xl grid-cols-4">
-              <TabsTrigger value="all">All Bookings</TabsTrigger>
-              <TabsTrigger value="above150">Above 150</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="assigned">Assigned</TabsTrigger>
+            <TabsList className="grid w-full max-w-4xl grid-cols-6">
+              <TabsTrigger value="live">Live Bookings</TabsTrigger>
+              <TabsTrigger value="assigned">Assigned Bookings</TabsTrigger>
+              <TabsTrigger value="expired">Expired Bookings</TabsTrigger>
+              <TabsTrigger value="above150">Above 150 Price</TabsTrigger>
+              <TabsTrigger value="below150">Under 150 Price</TabsTrigger>
+              <TabsTrigger value="completed">Completed Bookings</TabsTrigger>
             </TabsList>
-            <TabsContent value="all" className="mt-6">
+            <TabsContent value="live" className="mt-6">
+              {error ? (
+                <div className="flex items-center justify-center py-10 text-red-500 font-medium">
+                  Error loading live bookings. Please try again.
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={currentBookings}
+                  searchKey="user_name"
+                  filterColumns={filterColumns}
+                  loading={isLoading}
+                  fetching={isFetching}
+                  pagination={undefined} // Live bookings don't use pagination
+                  onPageChange={activeTab === "live" ? undefined : handlePageChange}
+                  onPageSizeChange={activeTab === "live" ? undefined : handlePageSizeChange}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="assigned" className="mt-6">
               {error ? (
                 <div className="flex items-center justify-center py-10 text-red-500 font-medium">
                   Error loading bookings. Please try again.
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={currentBookings}
+                  searchKey="user_name"
+                  filterColumns={filterColumns}
+                  loading={isLoading}
+                  fetching={isFetching}
+                  pagination={pagination ? {
+                    total: pagination.total,
+                    page: pagination.page,
+                    pages: pagination.pages,
+                    limit: pagination.limit,
+                  } : undefined}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="expired" className="mt-6">
+              {error ? (
+                <div className="flex items-center justify-center py-10 text-red-500 font-medium">
+                  Error loading expired bookings. Please try again.
                 </div>
               ) : (
                 <DataTable
@@ -363,7 +669,7 @@ const BookingsPageView = () => {
                 />
               )}
             </TabsContent>
-            <TabsContent value="pending" className="mt-6">
+            <TabsContent value="below150" className="mt-6">
               {error ? (
                 <div className="flex items-center justify-center py-10 text-red-500 font-medium">
                   Error loading bookings. Please try again.
@@ -387,10 +693,10 @@ const BookingsPageView = () => {
                 />
               )}
             </TabsContent>
-            <TabsContent value="assigned" className="mt-6">
+            <TabsContent value="completed" className="mt-6">
               {error ? (
                 <div className="flex items-center justify-center py-10 text-red-500 font-medium">
-                  Error loading bookings. Please try again.
+                  Error loading completed bookings. Please try again.
                 </div>
               ) : (
                 <DataTable
@@ -421,7 +727,9 @@ const BookingsPageView = () => {
           <DialogHeader>
             <DialogTitle>Assign Driver to Booking</DialogTitle>
             <DialogDescription>
-              Select a driver to assign to this booking. Only verified and approved drivers are shown.
+              {selectedBooking?.isExpired 
+                ? "This booking expired after 5 minutes without driver acceptance. Select a driver to manually assign it. Only verified and approved drivers are shown."
+                : "Select a driver to assign to this booking. Only verified and approved drivers are shown."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -467,6 +775,14 @@ const BookingsPageView = () => {
             {selectedBooking && (
               <div className="rounded-lg border p-4 bg-muted/50">
                 <div className="text-sm space-y-1">
+                  {selectedBooking.isExpired && (
+                    <div className="mb-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300 text-xs font-medium">
+                        <Clock className="h-3 w-3" />
+                        Expired Booking
+                      </span>
+                    </div>
+                  )}
                   <div>
                     <span className="font-medium">Customer:</span> {selectedBooking.user_name}
                   </div>
@@ -479,6 +795,11 @@ const BookingsPageView = () => {
                   <div>
                     <span className="font-medium">Price:</span> €{parseFloat(selectedBooking.price || "0").toFixed(2)}
                   </div>
+                  {selectedBooking.expiredAt && (
+                    <div>
+                      <span className="font-medium">Expired At:</span> {new Date(selectedBooking.expiredAt).toLocaleString()}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

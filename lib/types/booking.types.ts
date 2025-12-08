@@ -37,6 +37,16 @@ export interface Booking {
   commission: string;
   driverPrice: string;
   driverId?: string | null;
+  driver?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    profilePicture?: string | null;
+    isOnline?: boolean;
+  } | null;
   assignmentType?: "auto" | "admin" | null;
   status: "pending" | "accepted" | "started" | "picked_up" | "dropped_off" | "completed" | "rejected" | "cancelled";
   isAccepted: boolean;
@@ -49,6 +59,9 @@ export interface Booking {
   pickupCoordinates?: Coordinates;
   dropoffCoordinates?: Coordinates;
   isPaid: boolean;
+  expiresAt?: string;
+  expiredAt?: string;
+  isExpired?: boolean;
   createdAt: string;
   updatedAt: string;
 }
