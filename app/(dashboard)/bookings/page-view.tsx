@@ -548,6 +548,65 @@ const BookingsPageView = () => {
       }
     });
 
+    // Subscribe to admin-specific booking events
+    const unsubscribeAcceptedAdmin = subscribe("booking-accepted-admin", (message: any) => {
+      console.log("🔔 Booking accepted (admin-assigned):", message.data);
+      if (message.data) {
+        // Update booking in all caches
+        updateBookingInCache(message.data);
+        
+        // Also update live bookings cache if the booking exists there
+        const bookingId = message.data.id || message.data.bookingId;
+        if (bookingId) {
+          updateLiveBookingsCache(message.data, "update");
+        }
+        
+        // Invalidate assigned bookings cache to show updated status
+        if (activeTab === "assigned") {
+          queryClient.invalidateQueries({ queryKey: ["bookings", "assigned"] });
+        }
+      }
+    });
+
+    const unsubscribeRejectedAdmin = subscribe("booking-rejected-admin", (message: any) => {
+      console.log("🔔 Booking rejected (admin-assigned):", message.data);
+      if (message.data) {
+        // Update booking in all caches
+        updateBookingInCache(message.data);
+        
+        // Also update live bookings cache if the booking exists there
+        const bookingId = message.data.id || message.data.bookingId;
+        if (bookingId) {
+          updateLiveBookingsCache(message.data, "update");
+        }
+        
+        // Invalidate assigned bookings cache to show updated status
+        if (activeTab === "assigned") {
+          queryClient.invalidateQueries({ queryKey: ["bookings", "assigned"] });
+        }
+      }
+    });
+
+    const unsubscribeExpiredAdmin = subscribe("booking-expired-admin", (message: any) => {
+      console.log("🔔 Booking expired (admin notification):", message.data);
+      if (message.data) {
+        const bookingId = message.data.bookingId || message.data.id;
+        
+        // Remove from live bookings (booking is expired)
+        if (bookingId) {
+          updateLiveBookingsCache({ id: bookingId, bookingId }, "remove");
+        }
+        
+        // Update booking in cache to reflect expired status
+        updateBookingInCache(message.data);
+        
+        // Invalidate expired bookings cache to show new expired booking
+        if (activeTab === "expired") {
+          queryClient.invalidateQueries({ queryKey: ["bookings", "expired"] });
+        }
+      }
+    });
+
     // Cleanup subscriptions
     return () => {
       unsubscribeAdded();
@@ -559,6 +618,9 @@ const BookingsPageView = () => {
       unsubscribeCompleted();
       unsubscribeAssigned();
       unsubscribeTaken();
+      unsubscribeAcceptedAdmin();
+      unsubscribeRejectedAdmin();
+      unsubscribeExpiredAdmin();
     };
   }, [user, isConnected, subscribe, queryClient, activeTab]);
 
