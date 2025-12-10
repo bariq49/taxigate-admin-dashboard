@@ -360,12 +360,18 @@ const BookingsPageView = () => {
 
     // Helper function to update live bookings cache
     const updateLiveBookingsCache = (bookingData: any, action: "add" | "remove" | "update") => {
+      console.log(`🔄 [CACHE] Updating live bookings cache - Action: ${action}`, {
+        bookingId: bookingData?.id || bookingData?.bookingId,
+        hasBookingData: !!bookingData,
+      });
+
       queryClient.setQueryData(
         ["bookings", "live"],
         (oldData: BookingsResponseData | undefined) => {
           // If no old data exists, initialize with empty structure
           if (!oldData) {
             if (action === "add" && bookingData) {
+              console.log("✅ [CACHE] Initializing cache with new booking");
               return {
                 bookings: [bookingData],
                 pagination: {
@@ -376,6 +382,7 @@ const BookingsPageView = () => {
                 },
               };
             }
+            console.warn("⚠️ [CACHE] No old data and action is not 'add', returning undefined");
             return oldData; // Return undefined if no data and not adding
           }
 
@@ -389,23 +396,38 @@ const BookingsPageView = () => {
             if (!exists && bookingId) {
               // Add new booking at the beginning
               updatedBookings = [bookingData, ...updatedBookings];
+              console.log(`✅ [CACHE] Added booking ${bookingId} to cache. Total: ${updatedBookings.length}`);
+            } else if (exists) {
+              console.log(`⚠️ [CACHE] Booking ${bookingId} already exists in cache, skipping add`);
+            } else {
+              console.warn("⚠️ [CACHE] Cannot add booking - missing bookingId");
             }
           } else if (action === "remove") {
             // Use id or bookingId for removal
             const bookingId = bookingData.id || bookingData.bookingId;
+            const beforeLength = updatedBookings.length;
             updatedBookings = updatedBookings.filter(
               (b) => b.id !== bookingId
             );
+            if (updatedBookings.length < beforeLength) {
+              console.log(`✅ [CACHE] Removed booking ${bookingId} from cache. Total: ${updatedBookings.length}`);
+            }
           } else if (action === "update") {
             // Use id or bookingId for update
             const bookingId = bookingData.id || bookingData.bookingId;
-            updatedBookings = updatedBookings.map((b) =>
-              b.id === bookingId ? { ...b, ...bookingData } : b
-            );
+            const index = updatedBookings.findIndex((b) => b.id === bookingId);
+            if (index !== -1) {
+              updatedBookings[index] = { ...updatedBookings[index], ...bookingData };
+              console.log(`✅ [CACHE] Updated booking ${bookingId} in cache`);
+            } else {
+              // If booking doesn't exist, add it (might have been missed)
+              updatedBookings = [bookingData, ...updatedBookings];
+              console.log(`✅ [CACHE] Booking ${bookingId} not found, added to cache. Total: ${updatedBookings.length}`);
+            }
           }
 
           // Return new object to ensure React Query detects the change
-          return {
+          const newData = {
             ...oldData,
             bookings: updatedBookings,
             pagination: {
@@ -413,9 +435,21 @@ const BookingsPageView = () => {
               total: updatedBookings.length,
             },
           };
+          
+          console.log(`✅ [CACHE] Cache update complete. Total bookings: ${updatedBookings.length}`);
+          return newData;
         },
         { updatedAt: Date.now() } // Force update timestamp
       );
+
+      // Force a refetch if we're on the live tab to ensure UI updates
+      if (activeTab === "live") {
+        // Invalidate to trigger a background refetch as fallback
+        queryClient.invalidateQueries({ 
+          queryKey: ["bookings", "live"],
+          refetchType: "active", // Only refetch if query is active
+        });
+      }
     };
 
     // Helper function to update booking in all relevant caches
@@ -441,6 +475,31 @@ const BookingsPageView = () => {
       }
     };
 
+    // Subscribe to booking created event (for instant notifications)
+    const unsubscribeBookingCreated = subscribe("booking-created-admin", (message: any) => {
+      console.log("🔔 Booking created (admin):", message.data);
+      if (message.data) {
+        // Backend sends full booking data
+        const booking = message.data;
+        const bookingId = booking.id || booking.bookingId;
+        console.log("📦 New booking created:", bookingId);
+        console.log("📦 Booking status:", booking.status, "Expired:", booking.isExpired);
+        
+        // Update live bookings cache if booking is pending and not expired
+        if (booking.status === "pending" && !booking.isExpired) {
+          console.log("✅ Adding booking to live bookings cache");
+          updateLiveBookingsCache(booking, "add");
+        } else {
+          console.log("⏭️ Skipping live bookings cache update (status:", booking.status, "expired:", booking.isExpired, ")");
+        }
+        
+        // Show toast notification
+        toast.success(`New booking created: ${booking.from_location} → ${booking.to_location}`);
+      } else {
+        console.warn("⚠️ Booking created event received but no data in message");
+      }
+    });
+
     // Subscribe to live booking events
     const unsubscribeAdded = subscribe("live-booking-added", (message: any) => {
       console.log("🔔 Live booking added:", message.data);
@@ -449,6 +508,10 @@ const BookingsPageView = () => {
         const booking = message.data.booking;
         console.log("📦 Adding booking to cache:", booking.id || booking.bookingId);
         updateLiveBookingsCache(booking, "add");
+      } else if (message.data && !message.data.booking) {
+        // Handle case where booking data is at root level (backward compatibility)
+        console.log("📦 Adding booking to cache (root level):", message.data.id || message.data.bookingId);
+        updateLiveBookingsCache(message.data, "add");
       }
     });
 
@@ -609,6 +672,7 @@ const BookingsPageView = () => {
 
     // Cleanup subscriptions
     return () => {
+      unsubscribeBookingCreated();
       unsubscribeAdded();
       unsubscribeRemoved();
       unsubscribeUpdated();
@@ -623,6 +687,14 @@ const BookingsPageView = () => {
       unsubscribeExpiredAdmin();
     };
   }, [user, isConnected, subscribe, queryClient, activeTab]);
+
+  // Debug: Log connection status changes
+  useEffect(() => {
+    console.log(`🔌 [ABLY] Connection status changed: ${isConnected ? 'CONNECTED' : 'DISCONNECTED'}`);
+    if (!isConnected) {
+      console.warn("⚠️ [ABLY] Not connected - real-time updates will not work");
+    }
+  }, [isConnected]);
 
   return (
     <div className="space-y-6">
